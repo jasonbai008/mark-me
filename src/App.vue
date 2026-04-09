@@ -20,31 +20,8 @@ body {
   overflow: hidden;
 }
 
-/* 设置滚动条样式 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-/* 设置滚动条轨道 */
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* 设置滚动条滑块 */
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #01ba95 0%, #3afad3 100%);
-  border-radius: 10px;
-}
-
-/* 设置滚动条滑块悬停 */
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #009b7c 0%, #2eddc1 100%);
-}
-
 /* 设置打印样式 */
 @media print {
-
   #app,
   .mm-wrap,
   .output {
