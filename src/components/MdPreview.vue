@@ -5,11 +5,23 @@
 
 <script setup>
 import { marked } from 'marked'
+import hljs from 'highlight.js'
+import { markedHighlight } from 'marked-highlight'
+import 'highlight.js/styles/atom-one-dark.css' // 引入高亮样式
+
+// 配置 marked
+marked.use(markedHighlight({
+  langPrefix: 'hljs language-',
+  highlight(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+    return hljs.highlight(code, { language }).value
+  }
+}))
 
 // 接收字符串
 const props = defineProps(['inputStr'])
 // 加工字符串
-const output = computed(() => marked(props.inputStr))
+const output = computed(() => marked.parse(props.inputStr || ''))
 
 </script>
 

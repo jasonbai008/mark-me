@@ -26,6 +26,8 @@ This editor uses **Github markdown style**.
 - Vue 3.x
 - element-plus
 - marked.js
+- marked-highlight.js
+- highlight.js
 - github-markdown-css
 
 ## Contact me
