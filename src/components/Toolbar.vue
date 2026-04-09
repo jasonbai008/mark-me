@@ -45,15 +45,15 @@ export default {
         },
         insertImage() {
             // 插入图片
-            let newStr = `![Image](https://foruda.gitee.com/avatar/1677006650450442232/2155599_lubanseven_1614389228.png!avatar200)`;
+            let newStr = `![Image](https://bai-mark.netlify.app/favicon.png)`;
             this.$emit('updateContent', this.genNewContent(newStr))
         },
         insertTable() {
             // 插入表格
             let newStr = `| Item | Link Address |
 | :--------:   | :-----  |
-| Home Page | [https://lubanseven.gitee.io](https://lubanseven.gitee.io) |
-| My Blog | [https://jasonbai007.github.io](https://jasonbai007.github.io) |`;
+| Home Page | [https://jasonbai.dpdns.org](https://jasonbai.dpdns.org) |
+| My Blog | [https://blog.jasonbai.dpdns.org](https://blog.jasonbai.dpdns.org) |  `;
 
             this.$emit('updateContent', this.genNewContent(newStr))
         },

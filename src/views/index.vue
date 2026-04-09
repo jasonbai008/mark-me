@@ -29,7 +29,7 @@ This editor uses **Github markdown style**.
 - github-markdown-css
 
 ## Contact me
-You can follow me on [Gitee](https://gitee.com/lubanseven) or [Github](https://github.com/JasonBai007), or finding more information on my [Blog](https://jasonbai007.github.io/).`
+You can follow me on [Github](https://github.com/JasonBai008), or finding more information on my [Blog](https://blog.jasonbai.dpdns.org).`
 
 // 右侧变量
 const inputStr = ref(localStorage.markMeStr || initialStr)
