@@ -20,20 +20,26 @@ body {
   overflow: hidden;
 }
 
-/* 设置滚动条宽度 */
+/* 设置滚动条样式 */
 ::-webkit-scrollbar {
-  width: 8px;
-
+  width: 6px;
+  height: 6px;
 }
 
-/* 设置滚动条轨道背景色 */
+/* 设置滚动条轨道 */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
-/* 设置滚动条滑块背景色 */
+/* 设置滚动条滑块 */
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #01ba95, #3afad3);
+  background: linear-gradient(180deg, #01ba95 0%, #3afad3 100%);
+  border-radius: 10px;
+}
+
+/* 设置滚动条滑块悬停 */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #009b7c 0%, #2eddc1 100%);
 }
 
 /* 设置打印样式 */
