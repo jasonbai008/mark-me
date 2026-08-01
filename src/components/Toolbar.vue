@@ -99,7 +99,7 @@ export default {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `mark-me-${new Date().getTime()}.md`;
+      a.download = `mark-me-down-${this.getFormattedDate()}.md`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -146,11 +146,21 @@ export default {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `mark-me-${new Date().getTime()}.html`;
+      a.download = `mark-me-down-${this.getFormattedDate()}.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    },
+    getFormattedDate() {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+      return `${year}_${month}_${day}-${hours}_${minutes}_${seconds}`;
     },
     insertCode() {
       // 插入代码
