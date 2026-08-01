@@ -38,6 +38,9 @@
       <el-button color="#2C3E50" :icon="EditPen" @click="insertCode"
         >插入代码</el-button
       >
+      <el-button type="warning" :icon="Document" @click="exportMarkdown"
+        >导出 MD</el-button
+      >
       <el-button type="success" :icon="Download" @click="exportHTML"
         >导出 html</el-button
       >
@@ -56,6 +59,7 @@ import {
   EditPen,
   Download,
   Printer,
+  Document,
 } from "@element-plus/icons-vue";
 
 export default {
@@ -70,6 +74,7 @@ export default {
       EditPen,
       Download,
       Printer,
+      Document,
     };
   },
   computed: {},
@@ -80,6 +85,25 @@ export default {
     },
     print() {
       window.print();
+    },
+    exportMarkdown() {
+      // 获取文本域中的 Markdown 内容
+      const textarea = document.querySelector(".inputArea textarea");
+      if (!textarea) {
+        return;
+      }
+      const content = textarea.value;
+
+      // 创建 Blob 对象并触发下载
+      const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mark-me-${new Date().getTime()}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     },
     exportHTML() {
       // 获取预览区域的 HTML 内容
