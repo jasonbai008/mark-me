@@ -2,13 +2,13 @@
   <div class='mm-wrap'>
     <el-row>
       <el-col :span="12" :xs="24" id="printArea">
-        <MdPreview ref="previewRef" :inputStr="inputStr"></MdPreview>
+        <MdPreview ref="previewRef" :inputStr="inputStr" :loading="isTransforming"></MdPreview>
       </el-col>
       <el-col :span="12" :xs="24" id="editArea">
         <MdEditor ref="editorRef" v-model="inputStr"></MdEditor>
       </el-col>
     </el-row>
-    <Toolbar @updateContent="updateContent"></Toolbar>
+    <Toolbar @updateContent="updateContent" @setLoading="setLoading"></Toolbar>
   </div>
 </template>
 
@@ -86,6 +86,10 @@ You can follow me on [Github](https://github.com/JasonBai008), or finding more i
 
 // 右侧变量
 const inputStr = ref(localStorage.markMeStr || initialStr)
+
+// 「改成 MD」流式生成中：控制左侧预览居中 loading
+const isTransforming = ref(false)
+const setLoading = (val) => { isTransforming.value = val }
 
 // 动态改变内容
 const updateContent = (str) => inputStr.value = str

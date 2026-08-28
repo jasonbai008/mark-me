@@ -38,6 +38,13 @@
       <el-button color="#2C3E50" :icon="EditPen" @click="insertCode"
         >插入代码</el-button
       >
+      <el-button
+        type="warning"
+        :icon="Document"
+        :disabled="transforming"
+        @click="transformMarkdown"
+        >改成 MD</el-button
+      >
       <el-button type="warning" :icon="Document" @click="exportMarkdown"
         >导出 MD</el-button
       >
@@ -75,6 +82,7 @@ export default {
       Download,
       Printer,
       Document,
+      transforming: false, // 防止重复点击「改成 MD」
     };
   },
   computed: {},
@@ -85,6 +93,114 @@ export default {
     },
     print() {
       window.print();
+    },
+    async transformMarkdown() {
+      // 把右侧原文交给 Gemini，流式写回 Markdown；正文不得改写
+      if (this.transforming) {
+        return;
+      }
+      const textarea = document.querySelector(".inputArea textarea");
+      if (!textarea) {
+        return;
+      }
+      const content = textarea.value;
+      if (!content.trim()) {
+        this.$message.warning("右侧没有可转换的内容");
+        return;
+      }
+
+      this.transforming = true;
+      this.$emit("setLoading", true);
+      this.$emit("updateContent", ""); // 先清空右侧，再写入流式结果
+
+      let result = "";
+      try {
+        const response = await fetch(
+          "https://freeapi.jasonbai.dpdns.org/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "gemini-3.5-flash-lite",
+              stream: true,
+              temperature: 0.2,
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "你是 Markdown 排版助手。将用户文本整理为 Markdown。文字内容必须与原文严格一致，不得增删、改写、翻译或润色。只做轻量排版（标题、列表、引用、代码块、加粗、表格等），不要大改结构。只输出 Markdown 正文，不要解释，不要用代码围栏包裹全文。",
+                },
+                {
+                  role: "user",
+                  content: content,
+                },
+              ],
+            }),
+          }
+        );
+
+        if (!response.ok || !response.body) {
+          throw new Error("请求失败");
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
+
+        const appendDelta = (line) => {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data:")) {
+            return;
+          }
+          const data = trimmed.slice(5).trim();
+          if (!data || data === "[DONE]") {
+            return;
+          }
+          try {
+            const json = JSON.parse(data);
+            const delta = json.choices?.[0]?.delta?.content || "";
+            if (delta) {
+              result += delta;
+              this.$emit("updateContent", result);
+            }
+          } catch (e) {
+            // 半包 JSON 等解析失败时跳过该行
+          }
+        };
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+          lines.forEach(appendDelta);
+        }
+        appendDelta(buffer); // 处理末尾未换行的最后一包
+
+        if (!result.trim()) {
+          throw new Error("空结果");
+        }
+
+        // 去掉模型偶尔包在最外层的 ```markdown 围栏
+        const unwrapped = result
+          .replace(/^```(?:markdown|md)?\s*\n/i, "")
+          .replace(/\n```\s*$/, "");
+        if (unwrapped !== result) {
+          result = unwrapped;
+          this.$emit("updateContent", result);
+        }
+      } catch (e) {
+        this.$message.error("转换失败，请稍后重试");
+        this.$emit("updateContent", content); // 失败一律还原转换前的原文
+      } finally {
+        this.transforming = false;
+        this.$emit("setLoading", false);
+      }
     },
     exportMarkdown() {
       // 获取文本域中的 Markdown 内容

@@ -15,7 +15,7 @@ a vue3 starter powered by vite.
 
 ## Features
 
-1. 支持SCSS
+1. 支持 SCSS
 2. 支持自动打开浏览器
 3. 支持配置环境变量
 4. 支持开发环境请求代理
