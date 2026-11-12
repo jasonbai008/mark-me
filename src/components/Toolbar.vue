@@ -202,26 +202,59 @@ export default {
         this.$emit("setLoading", false);
       }
     },
-    exportMarkdown() {
+    async askExportFileName(ext) {
+      const defaultName = `mark-me-down-${this.getFormattedDate()}`;
+      try {
+        const { value } = await this.$prompt("请输入导出的文件名", "导出文件", {
+          confirmButtonText: "导出",
+          cancelButtonText: "取消",
+          inputValue: defaultName,
+          inputPlaceholder: "文件名（可不带后缀）",
+          inputValidator: (val) => {
+            if (!val || !String(val).trim()) {
+              return "文件名不能为空";
+            }
+            return true;
+          },
+        });
+        let name = String(value).trim().replace(/[\\/:*?"<>|]/g, "_");
+        if (!name.toLowerCase().endsWith(ext)) {
+          name += ext;
+        }
+        return name;
+      } catch {
+        return "";
+      }
+    },
+    async exportMarkdown() {
       // 获取文本域中的 Markdown 内容
       const textarea = document.querySelector(".inputArea textarea");
       if (!textarea) {
         return;
       }
       const content = textarea.value;
+      const fileName = await this.askExportFileName(".md");
+      if (!fileName) {
+        return;
+      }
 
       // 创建 Blob 对象并触发下载
       const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `mark-me-down-${this.getFormattedDate()}.md`;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     },
-    exportHTML() {
+    async exportHTML() {
+      const fileName = await this.askExportFileName(".html");
+      if (!fileName) {
+        return;
+      }
+
       // 获取预览区域的 HTML 内容
       const content = document.querySelector(".output").innerHTML;
 
@@ -262,7 +295,7 @@ export default {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `mark-me-down-${this.getFormattedDate()}.html`;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
